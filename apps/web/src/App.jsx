@@ -2,7 +2,7 @@ import PostMessage from "./PostMessage";
 import ReadMessages from "./ReadMessages";
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import theme from './theme';
 
 function App() {
