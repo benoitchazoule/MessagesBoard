@@ -12,11 +12,15 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 const JSON_LIMIT = process.env.JSON_LIMIT || '10mb';
 
 // Middleware
-app.use(cors({
+const corsOptions = {
   origin: CORS_ORIGIN,
-  credentials: true
-}));
-app.use(express.json({ limit: JSON_LIMIT }));
+  allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Methods", "Access-Control-Request-Headers"],
+  credentials: true,
+  enablePreflight: true
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions))
+app.use(express.json({ limit: JSON_LIMIT }));app.
 
 console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
 console.log(`JSON_LIMIT is set to: ${JSON_LIMIT}`);
