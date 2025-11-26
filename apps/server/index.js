@@ -11,15 +11,29 @@ const DB_NAME = process.env.DB_NAME || 'messagesboard';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 const JSON_LIMIT = process.env.JSON_LIMIT || '10mb';
 
-// Middleware
+// Middleware - CORS must be configured BEFORE routes
 const corsOptions = {
-  origin: CORS_ORIGIN,
-  allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Methods", "Access-Control-Request-Headers"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Parse CORS_ORIGIN as it might contain multiple origins separated by comma
+    const allowedOrigins = CORS_ORIGIN.split(',').map(o => o.trim());
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  enablePreflight: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 };
-app.use(cors());
-//app.options('*', cors(corsOptions));
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: JSON_LIMIT }));
 
 console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
