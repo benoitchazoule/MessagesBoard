@@ -32,8 +32,16 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+//app.use(cors(corsOptions));
+//app.options('*', cors(corsOptions));
+app.use(cors({
+  origin: '*',
+  credentials: false,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+console.log('CORS enabled for all origins (DEBUG MODE)');
 app.use(express.json({ limit: JSON_LIMIT }));
 
 console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
