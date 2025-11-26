@@ -18,6 +18,9 @@ app.use(cors({
 }));
 app.use(express.json({ limit: JSON_LIMIT }));
 
+console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
+console.log(`JSON_LIMIT is set to: ${JSON_LIMIT}`);
+
 let messagesCollection;
 
 // MongoDB Atlas connection with options
