@@ -10,7 +10,7 @@ function ReadMessages() {
   const [fade, setFade] = useState(true);
   const textContainerRef = useRef(null);
 
-  const API_URL = 'http://localhost:4000';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
   useEffect(() => {
     fetch(`${API_URL}/health`)
