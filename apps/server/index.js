@@ -12,36 +12,41 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 const JSON_LIMIT = process.env.JSON_LIMIT || '10mb';
 
 // Middleware - CORS must be configured BEFORE routes
+const allowedOrigins = CORS_ORIGIN.split(',').map(origin => origin.trim());
+console.log('Allowed CORS origins:', allowedOrigins);
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
+    // Allow requests with no origin (mobile apps, curl, postman)
+    if (!origin) {
+      console.log('Request with no origin - allowing');
+      return callback(null, true);
+    }
     
-    // Parse CORS_ORIGIN as it might contain multiple origins separated by comma
-    const allowedOrigins = CORS_ORIGIN.split(',').map(o => o.trim());
+    console.log('Request from origin:', origin);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      console.log('Origin allowed');
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.log('Origin blocked');
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-//app.use(cors(corsOptions));
-//app.options('*', cors(corsOptions));
-app.use(cors({
+app.use(cors(corsOptions));
+app.options('*', cors());
+/* app.use(cors({
   origin: '*',
   credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-console.log('CORS enabled for all origins (DEBUG MODE)');
+console.log('CORS enabled for all origins (DEBUG MODE)'); */
 app.use(express.json({ limit: JSON_LIMIT }));
 
 console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
