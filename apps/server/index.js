@@ -18,8 +18,8 @@ const corsOptions = {
   credentials: true,
   enablePreflight: true
 };
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors());
+//app.options('*', cors(corsOptions));
 app.use(express.json({ limit: JSON_LIMIT }));
 
 console.log(`CORS_ORIGIN is set to: ${CORS_ORIGIN}`);
