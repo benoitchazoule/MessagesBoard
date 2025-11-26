@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Fade, Typography, Box, IconButton } from '@mui/material';
+import { Fade, Typography, Box, IconButton, CircularProgress } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 function ReadMessages() {
+    const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState([]);
     const [recipient, setRecipient] = useState('default');
     const [current, setCurrent] = useState(0);
@@ -19,14 +20,24 @@ function ReadMessages() {
     // Minimum swipe distance (in px)
     const minSwipeDistance = 50;
 
-
+    const fetchMessages = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(
+                `${API_URL}/messages/${recipient}`
+            );
+            const data = await response.json();
+            
+            setMessages(data)
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        fetch(`${API_URL}/health`)
-            .then(res => res.json())
-
-        fetch(`${API_URL}/messages/${recipient}`)
-            .then(res => res.json())
-            .then(data => setMessages(data));
+        fetchMessages();
     }, [recipient]);
 
     const handlePrev = () => {
@@ -107,6 +118,27 @@ function ReadMessages() {
             position: 'relative',
             overflow: 'hidden'
         }}>
+            {/* Title at top */}
+            <Box sx={{ 
+                position: 'fixed',
+                top: { xs: 16, sm: 24, md: 32 },
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 10,
+                textAlign: 'center',
+                px: 2
+            }}>
+                <Typography 
+                sx={{ 
+                    color: '#fff7d6',
+                    fontSize: { xs: '1.8rem', sm: '2rem', md: '2.5rem' },
+                    fontWeight: 600,
+                    textShadow: '#F1F1E6 1px 0 4px'
+                }}
+                >
+                Livre d'or de Karen
+                </Typography>
+            </Box>
             {/* Previous button */}
             <Box sx={{
                 position: 'absolute',
@@ -184,7 +216,9 @@ function ReadMessages() {
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
             >
-                {messages.length === 0 ? (
+                {loading && messages.length === 0 ? (
+                    <CircularProgress sx={{ color: 'secondary.main' }} />
+                ) :messages.length === 0 ? (
                     <Typography
                         variant="poster"
                         sx={{
